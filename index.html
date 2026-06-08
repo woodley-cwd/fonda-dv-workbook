@@ -1504,6 +1504,7 @@ function restoreBackup(event) {
   reader.onload = (e) => {
     try {
       const parsed = JSON.parse(e.target.result);
+      console.log('Parsed JSON:', parsed);
 
       let importedData = parsed;
 
@@ -1511,29 +1512,52 @@ function restoreBackup(event) {
       if (parsed.expenses && !parsed.transactions) {
         console.log('Converting old Sanctuary backup...');
         importedData = convertOldBackup(parsed);
+        console.log('Converted data:', importedData);
       }
 
-      // Validate
-      if (!importedData.transactions || !importedData.goals) {
-        alert('Invalid backup format. Make sure it\'s a valid Woodley Money backup.');
-        return;
+      // Validate - be flexible with what we accept
+      if (!importedData.transactions) {
+        importedData.transactions = [];
+      }
+      if (!importedData.goals) {
+        importedData.goals = [];
+      }
+      if (!importedData.pipeline) {
+        importedData.pipeline = [];
+      }
+      if (!importedData.categories) {
+        importedData.categories = { expense: DEF_EXP_CATS, income: DEF_INC_CATS };
+      }
+      if (!importedData.name) {
+        importedData.name = importedData.userName || 'User';
+      }
+      if (!importedData.bizName) {
+        importedData.bizName = '';
+      }
+      if (!importedData.settings) {
+        importedData.settings = { fyMonth: 1 };
       }
 
+      console.log('Final data to save:', importedData);
+
+      // Save the data
       data = importedData;
-      save();
+      localStorage.setItem('woodley-data', JSON.stringify(data));
+      localStorage.setItem('woodley-onboarded', 'true');
+      console.log('Data saved to localStorage');
 
       // Reset form
       document.getElementById('restore-inp').value = '';
 
-      const txCount = importedData.transactions.length;
-      const goalCount = importedData.goals.length;
-      const pipeCount = importedData.pipeline.length;
+      const txCount = (importedData.transactions || []).length;
+      const goalCount = (importedData.goals || []).length;
+      const pipeCount = (importedData.pipeline || []).length;
 
       alert(`✓ Backup restored!\n\n${txCount} transactions\n${goalCount} goals\n${pipeCount} pipeline items\n\nRefresh the page to see your data.`);
       location.reload();
     } catch (err) {
       console.error('Restore error:', err);
-      alert(`Error restoring backup:\n${err.message}\n\nMake sure it's a valid JSON file.`);
+      alert(`Error: ${err.message}\n\nCheck browser console (F12) for details.`);
     }
   };
   reader.onerror = () => {
