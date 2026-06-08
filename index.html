@@ -1428,69 +1428,94 @@ function downloadBackup() {
 }
 
 function convertOldBackup(oldData) {
-  // Convert Sanctuary (old) format to Woodley Money format
-  const converted = {
-    transactions: [],
-    goals: [],
-    pipeline: [],
-    categories: {
-      expense: oldData.personalCats || DEF_EXP_CATS,
-      income: oldData.bizCats || DEF_INC_CATS
-    },
-    name: oldData.userName || 'User',
-    bizName: oldData.bizName || '',
-    settings: { fyMonth: 1 }
-  };
+  try {
+    // Convert Sanctuary (old) format to Woodley Money format
+    const converted = {
+      transactions: [],
+      goals: [],
+      pipeline: [],
+      categories: {
+        expense: Array.isArray(oldData.personalCats) ? oldData.personalCats : DEF_EXP_CATS,
+        income: Array.isArray(oldData.bizCats) ? oldData.bizCats : DEF_INC_CATS
+      },
+      name: oldData.userName || 'User',
+      bizName: oldData.bizName || '',
+      settings: { fyMonth: 1 }
+    };
 
-  // Convert expenses to transactions
-  if (oldData.expenses && Array.isArray(oldData.expenses)) {
-    converted.transactions = oldData.expenses.map(exp => ({
-      id: 'tx-' + exp.id,
-      section: exp.section || 'personal',
-      type: exp.type || 'expense',
-      amount: exp.amount,
-      date: exp.date,
-      desc: exp.desc,
-      category: exp.cat || 'Other',
-      notes: exp.notes || ''
-    }));
+    // Convert expenses to transactions
+    if (oldData.expenses && Array.isArray(oldData.expenses)) {
+      converted.transactions = oldData.expenses.filter(exp => exp).map(exp => {
+        try {
+          return {
+            id: 'tx-' + (exp.id || Date.now()),
+            section: exp.section || 'personal',
+            type: exp.type || 'expense',
+            amount: parseFloat(exp.amount) || 0,
+            date: exp.date || new Date().toISOString().split('T')[0],
+            desc: exp.desc || '',
+            category: exp.cat || 'Other',
+            notes: exp.notes || ''
+          };
+        } catch (e) {
+          console.warn('Skipped invalid transaction:', exp);
+          return null;
+        }
+      }).filter(t => t);
+    }
+
+    // Copy goals
+    if (oldData.goals && Array.isArray(oldData.goals)) {
+      converted.goals = oldData.goals.filter(g => g).map(g => {
+        try {
+          return {
+            id: 'goal-' + (g.id || Date.now()),
+            name: g.name || 'Goal',
+            saved: parseFloat(g.saved) || 0,
+            target: parseFloat(g.target) || 0,
+            color: g.color || '#a8c8f0',
+            contributions: Array.isArray(g.contributions) ? g.contributions : []
+          };
+        } catch (e) {
+          console.warn('Skipped invalid goal:', g);
+          return null;
+        }
+      }).filter(g => g);
+    }
+
+    // Convert pipeline
+    if (oldData.pipeline && Array.isArray(oldData.pipeline)) {
+      converted.pipeline = oldData.pipeline.filter(p => p).map(p => {
+        try {
+          let month = p.month;
+          // Handle month format: "2026-05" → 5, or just "5"
+          if (typeof month === 'string' && month.includes('-')) {
+            month = parseInt(month.split('-')[1]) || 1;
+          } else {
+            month = parseInt(month) || 1;
+          }
+
+          return {
+            id: 'pipe-' + (p.id || Date.now()),
+            client: p.client || '',
+            amount: parseFloat(p.amount) || 0,
+            month: month,
+            year: p.year || new Date().getFullYear(),
+            notes: p.notes || '',
+            status: p.status || 'pending'
+          };
+        } catch (e) {
+          console.warn('Skipped invalid pipeline item:', p);
+          return null;
+        }
+      }).filter(p => p);
+    }
+
+    return converted;
+  } catch (e) {
+    console.error('Conversion error:', e);
+    return null;
   }
-
-  // Copy goals (same structure mostly)
-  if (oldData.goals && Array.isArray(oldData.goals)) {
-    converted.goals = oldData.goals.map(g => ({
-      id: 'goal-' + g.id,
-      name: g.name,
-      saved: g.saved,
-      target: g.target,
-      color: g.color || '#a8c8f0',
-      contributions: g.contributions || []
-    }));
-  }
-
-  // Convert pipeline
-  if (oldData.pipeline && Array.isArray(oldData.pipeline)) {
-    converted.pipeline = oldData.pipeline.map(p => {
-      // Handle month format: could be "2026-05" or just "5"
-      let month = p.month;
-      if (typeof month === 'string' && month.includes('-')) {
-        month = parseInt(month.split('-')[1]);
-      } else {
-        month = parseInt(month) || 1;
-      }
-      return {
-        id: 'pipe-' + p.id,
-        client: p.client,
-        amount: p.amount,
-        month: month,
-        year: p.year || new Date().getFullYear(),
-        notes: p.notes || '',
-        status: p.status || 'pending'
-      };
-    });
-  }
-
-  return converted;
 }
 
 function restoreBackup(event) {
@@ -1504,64 +1529,48 @@ function restoreBackup(event) {
   reader.onload = (e) => {
     try {
       const parsed = JSON.parse(e.target.result);
-      console.log('Parsed JSON:', parsed);
-
       let importedData = parsed;
 
-      // Check if it's old Sanctuary format
+      // Check if it's old Sanctuary format and convert
       if (parsed.expenses && !parsed.transactions) {
-        console.log('Converting old Sanctuary backup...');
-        importedData = convertOldBackup(parsed);
-        console.log('Converted data:', importedData);
+        const converted = convertOldBackup(parsed);
+        if (converted) {
+          importedData = converted;
+        }
       }
 
-      // Validate - be flexible with what we accept
-      if (!importedData.transactions) {
-        importedData.transactions = [];
-      }
-      if (!importedData.goals) {
-        importedData.goals = [];
-      }
-      if (!importedData.pipeline) {
-        importedData.pipeline = [];
-      }
+      // Ensure all required fields exist
+      if (!importedData) importedData = {};
+      if (!importedData.transactions) importedData.transactions = [];
+      if (!importedData.goals) importedData.goals = [];
+      if (!importedData.pipeline) importedData.pipeline = [];
       if (!importedData.categories) {
-        importedData.categories = { expense: DEF_EXP_CATS, income: DEF_INC_CATS };
+        importedData.categories = {
+          expense: DEF_EXP_CATS,
+          income: DEF_INC_CATS
+        };
       }
-      if (!importedData.name) {
-        importedData.name = importedData.userName || 'User';
-      }
-      if (!importedData.bizName) {
-        importedData.bizName = '';
-      }
-      if (!importedData.settings) {
-        importedData.settings = { fyMonth: 1 };
-      }
+      if (!importedData.name) importedData.name = 'User';
+      if (!importedData.bizName) importedData.bizName = '';
+      if (!importedData.settings) importedData.settings = { fyMonth: 1 };
 
-      console.log('Final data to save:', importedData);
-
-      // Save the data
+      // Save directly
       data = importedData;
-      localStorage.setItem('woodley-data', JSON.stringify(data));
+      localStorage.setItem('woodley-data', JSON.stringify(importedData));
       localStorage.setItem('woodley-onboarded', 'true');
-      console.log('Data saved to localStorage');
 
-      // Reset form
       document.getElementById('restore-inp').value = '';
 
-      const txCount = (importedData.transactions || []).length;
-      const goalCount = (importedData.goals || []).length;
-      const pipeCount = (importedData.pipeline || []).length;
+      const txCount = importedData.transactions.length;
+      const goalCount = importedData.goals.length;
+      const pipeCount = importedData.pipeline.length;
 
-      alert(`✓ Backup restored!\n\n${txCount} transactions\n${goalCount} goals\n${pipeCount} pipeline items\n\nRefresh the page to see your data.`);
-      location.reload();
+      alert(`✓ Restored!\n${txCount} transactions\n${goalCount} goals\n${pipeCount} pipeline\n\nRefresh to see data.`);
+      setTimeout(() => location.reload(), 500);
+
     } catch (err) {
-      console.error('Restore error:', err);
-      alert(`Error: ${err.message}\n\nCheck browser console (F12) for details.`);
+      alert(`Error reading file:\n${err.message}`);
     }
-  };
-  reader.onerror = () => {
-    alert('Error reading file');
   };
   reader.readAsText(file);
 }
