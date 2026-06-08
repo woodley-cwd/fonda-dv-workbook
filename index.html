@@ -1427,6 +1427,72 @@ function downloadBackup() {
   URL.revokeObjectURL(url);
 }
 
+function convertOldBackup(oldData) {
+  // Convert Sanctuary (old) format to Woodley Money format
+  const converted = {
+    transactions: [],
+    goals: [],
+    pipeline: [],
+    categories: {
+      expense: oldData.personalCats || DEF_EXP_CATS,
+      income: oldData.bizCats || DEF_INC_CATS
+    },
+    name: oldData.userName || 'User',
+    bizName: oldData.bizName || '',
+    settings: { fyMonth: 1 }
+  };
+
+  // Convert expenses to transactions
+  if (oldData.expenses && Array.isArray(oldData.expenses)) {
+    converted.transactions = oldData.expenses.map(exp => ({
+      id: 'tx-' + exp.id,
+      section: exp.section || 'personal',
+      type: exp.type || 'expense',
+      amount: exp.amount,
+      date: exp.date,
+      desc: exp.desc,
+      category: exp.cat || 'Other',
+      notes: exp.notes || ''
+    }));
+  }
+
+  // Copy goals (same structure mostly)
+  if (oldData.goals && Array.isArray(oldData.goals)) {
+    converted.goals = oldData.goals.map(g => ({
+      id: 'goal-' + g.id,
+      name: g.name,
+      saved: g.saved,
+      target: g.target,
+      color: g.color || '#a8c8f0',
+      contributions: g.contributions || []
+    }));
+  }
+
+  // Convert pipeline
+  if (oldData.pipeline && Array.isArray(oldData.pipeline)) {
+    converted.pipeline = oldData.pipeline.map(p => {
+      // Handle month format: could be "2026-05" or just "5"
+      let month = p.month;
+      if (typeof month === 'string' && month.includes('-')) {
+        month = parseInt(month.split('-')[1]);
+      } else {
+        month = parseInt(month) || 1;
+      }
+      return {
+        id: 'pipe-' + p.id,
+        client: p.client,
+        amount: p.amount,
+        month: month,
+        year: p.year || new Date().getFullYear(),
+        notes: p.notes || '',
+        status: p.status || 'pending'
+      };
+    });
+  }
+
+  return converted;
+}
+
 function restoreBackup(event) {
   const file = event.target.files[0];
   if (!file) {
@@ -1439,23 +1505,35 @@ function restoreBackup(event) {
     try {
       const parsed = JSON.parse(e.target.result);
 
-      // Validate backup has required fields
-      if (!parsed.transactions || !parsed.goals) {
-        alert('Invalid backup format. Make sure it\'s a Woodley Money backup file.');
+      let importedData = parsed;
+
+      // Check if it's old Sanctuary format
+      if (parsed.expenses && !parsed.transactions) {
+        console.log('Converting old Sanctuary backup...');
+        importedData = convertOldBackup(parsed);
+      }
+
+      // Validate
+      if (!importedData.transactions || !importedData.goals) {
+        alert('Invalid backup format. Make sure it\'s a valid Woodley Money backup.');
         return;
       }
 
-      data = parsed;
+      data = importedData;
       save();
 
-      // Reset form after restore
+      // Reset form
       document.getElementById('restore-inp').value = '';
 
-      alert(`✓ Backup restored!\n\n${parsed.transactions.length} transactions\n${parsed.goals.length} goals\n\nRefresh the page to see your data.`);
+      const txCount = importedData.transactions.length;
+      const goalCount = importedData.goals.length;
+      const pipeCount = importedData.pipeline.length;
+
+      alert(`✓ Backup restored!\n\n${txCount} transactions\n${goalCount} goals\n${pipeCount} pipeline items\n\nRefresh the page to see your data.`);
       location.reload();
     } catch (err) {
       console.error('Restore error:', err);
-      alert(`Error restoring backup:\n${err.message}\n\nMake sure it's a valid JSON file from Woodley Money.`);
+      alert(`Error restoring backup:\n${err.message}\n\nMake sure it's a valid JSON file.`);
     }
   };
   reader.onerror = () => {
