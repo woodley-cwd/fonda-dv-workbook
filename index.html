@@ -1429,18 +1429,37 @@ function downloadBackup() {
 
 function restoreBackup(event) {
   const file = event.target.files[0];
-  if (!file) return;
+  if (!file) {
+    alert('No file selected');
+    return;
+  }
 
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
       const parsed = JSON.parse(e.target.result);
+
+      // Validate backup has required fields
+      if (!parsed.transactions || !parsed.goals) {
+        alert('Invalid backup format. Make sure it\'s a Woodley Money backup file.');
+        return;
+      }
+
       data = parsed;
       save();
-      alert('Backup restored! Refresh the page.');
+
+      // Reset form after restore
+      document.getElementById('restore-inp').value = '';
+
+      alert(`✓ Backup restored!\n\n${parsed.transactions.length} transactions\n${parsed.goals.length} goals\n\nRefresh the page to see your data.`);
+      location.reload();
     } catch (err) {
-      alert('Invalid backup file');
+      console.error('Restore error:', err);
+      alert(`Error restoring backup:\n${err.message}\n\nMake sure it's a valid JSON file from Woodley Money.`);
     }
+  };
+  reader.onerror = () => {
+    alert('Error reading file');
   };
   reader.readAsText(file);
 }
