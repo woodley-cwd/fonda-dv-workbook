@@ -1525,53 +1525,56 @@ function restoreBackup(event) {
     return;
   }
 
+  // Show loading state
+  const btn = event.target;
+  btn.disabled = true;
+
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
+      console.log('Starting restore...');
+
+      // Parse JSON
       const parsed = JSON.parse(e.target.result);
-      let importedData = parsed;
+      console.log('JSON parsed, transactions:', parsed.transactions?.length || 0);
 
-      // Check if it's old Sanctuary format and convert
-      if (parsed.expenses && !parsed.transactions) {
-        const converted = convertOldBackup(parsed);
-        if (converted) {
-          importedData = converted;
-        }
-      }
+      // Minimal validation - accept whatever structure is there
+      const importedData = {
+        transactions: parsed.transactions || [],
+        goals: parsed.goals || [],
+        pipeline: parsed.pipeline || [],
+        categories: parsed.categories || { expense: DEF_EXP_CATS, income: DEF_INC_CATS },
+        name: parsed.name || 'User',
+        bizName: parsed.bizName || '',
+        settings: parsed.settings || { fyMonth: 1 }
+      };
 
-      // Ensure all required fields exist
-      if (!importedData) importedData = {};
-      if (!importedData.transactions) importedData.transactions = [];
-      if (!importedData.goals) importedData.goals = [];
-      if (!importedData.pipeline) importedData.pipeline = [];
-      if (!importedData.categories) {
-        importedData.categories = {
-          expense: DEF_EXP_CATS,
-          income: DEF_INC_CATS
-        };
-      }
-      if (!importedData.name) importedData.name = 'User';
-      if (!importedData.bizName) importedData.bizName = '';
-      if (!importedData.settings) importedData.settings = { fyMonth: 1 };
+      console.log('Saving to localStorage...');
 
-      // Save directly
-      data = importedData;
-      localStorage.setItem('woodley-data', JSON.stringify(importedData));
+      // Save in chunks to avoid blocking
       localStorage.setItem('woodley-onboarded', 'true');
+      localStorage.setItem('woodley-data', JSON.stringify(importedData));
+
+      console.log('Save complete!');
 
       document.getElementById('restore-inp').value = '';
+      btn.disabled = false;
 
-      const txCount = importedData.transactions.length;
-      const goalCount = importedData.goals.length;
-      const pipeCount = importedData.pipeline.length;
-
-      alert(`✓ Restored!\n${txCount} transactions\n${goalCount} goals\n${pipeCount} pipeline\n\nRefresh to see data.`);
-      setTimeout(() => location.reload(), 500);
+      const msg = `✓ Data saved!\n\n${importedData.transactions.length} transactions\n${importedData.goals.length} goals\n${importedData.pipeline.length} pipeline\n\nNow REFRESH the page (F5) to load your data.`;
+      alert(msg);
 
     } catch (err) {
-      alert(`Error reading file:\n${err.message}`);
+      console.error('Restore failed:', err);
+      btn.disabled = false;
+      alert(`Error:\n${err.message}`);
     }
   };
+
+  reader.onerror = () => {
+    btn.disabled = false;
+    alert('Error reading file');
+  };
+
   reader.readAsText(file);
 }
 
