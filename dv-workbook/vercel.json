@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd dv-workbook && npm run build",
+  "outputDirectory": "dv-workbook/build",
+  "devCommand": "cd dv-workbook && npm start",
+  "installCommand": "cd dv-workbook && npm install"
+}
