@@ -1,0 +1,140 @@
+.section4-container {
+  padding-bottom: 40px;
+}
+
+.toolkit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
+  margin-bottom: 40px;
+}
+
+.toolkit-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border-top: 4px solid;
+}
+
+.toolkit-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--charcoal);
+}
+
+.scripts-card {
+  border-top-color: var(--orange);
+}
+
+.checklist-card {
+  border-top-color: var(--strawberry);
+}
+
+.scripts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.script-item {
+  background: linear-gradient(135deg, rgba(254, 100, 16, 0.06), rgba(254, 100, 16, 0.02));
+  padding: 16px;
+  border-left: 3px solid var(--orange);
+  border-radius: 8px;
+}
+
+.script-marker {
+  font-size: 24px;
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.script-item p {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.checklist-item input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--strawberry);
+}
+
+.checklist-item span {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.safety-planning-section {
+  background: linear-gradient(135deg, rgba(253, 43, 96, 0.06), rgba(30, 154, 180, 0.06));
+  padding: 32px;
+  border-radius: 12px;
+  margin-top: 32px;
+}
+
+.safety-planning-section h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--charcoal);
+}
+
+.safety-elements {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.safety-element {
+  background: var(--white);
+  padding: 20px;
+  border-radius: 10px;
+  border-left: 4px solid var(--fuchsia);
+}
+
+.safety-element h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fuchsia);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.safety-element p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .toolkit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .safety-elements {
+    grid-template-columns: 1fr;
+  }
+}

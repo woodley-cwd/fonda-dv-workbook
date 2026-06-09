@@ -1,0 +1,101 @@
+.section5-container {
+  padding-bottom: 40px;
+}
+
+.action-plan-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 40px;
+}
+
+.action-plan-section {
+  margin-bottom: 40px;
+}
+
+.action-plan-section:last-of-type {
+  margin-bottom: 0;
+}
+
+.action-plan-section label {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.action-plan-section h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin-bottom: 8px;
+}
+
+.label-hint {
+  font-size: 14px;
+  color: #666;
+  font-weight: normal;
+  margin-top: 4px;
+}
+
+.action-input {
+  width: 100%;
+  min-height: 160px;
+  padding: 20px;
+  border: 2px solid var(--light-gray);
+  border-radius: 10px;
+  font-size: 15px;
+  background: rgba(254, 100, 16, 0.02);
+  font-family: 'Inter', sans-serif;
+}
+
+.action-input:focus {
+  border-color: var(--orange);
+  background: rgba(254, 100, 16, 0.04);
+  outline: none;
+}
+
+.closing-message {
+  background: linear-gradient(135deg, rgba(30, 154, 180, 0.08), rgba(30, 154, 180, 0.04));
+  padding: 40px;
+  border-radius: 16px;
+  border-left: 6px solid var(--cyan);
+  text-align: center;
+}
+
+.closing-message h3 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin-bottom: 16px;
+}
+
+.closing-message p {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.closing-message p:first-of-type {
+  margin-bottom: 24px;
+}
+
+.signed {
+  font-style: italic;
+  color: var(--cyan);
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .action-plan-card {
+    padding: 20px;
+  }
+
+  .closing-message {
+    padding: 24px;
+  }
+
+  .closing-message h3 {
+    font-size: 22px;
+  }
+}

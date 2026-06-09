@@ -1,0 +1,298 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --fuchsia: #fd2b60;
+  --orange: #fe6410;
+  --strawberry: #f6538c;
+  --cyan: #1e9ab4;
+  --charcoal: #1a1a1a;
+  --cream: #faf8f3;
+  --light-gray: #f5f5f5;
+  --white: #ffffff;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--cream);
+  color: var(--charcoal);
+  line-height: 1.6;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--fuchsia) 0%, var(--cyan) 100%);
+  color: var(--white);
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid var(--white);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-screen p {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* Utility Classes */
+button {
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  border-radius: 8px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+textarea,
+input[type='text'] {
+  font-family: 'Inter', sans-serif;
+  border-radius: 8px;
+  border: 2px solid var(--light-gray);
+  padding: 12px 16px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+textarea:focus,
+input[type='text']:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(30, 154, 180, 0.1);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--light-gray);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--orange);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--fuchsia);
+}
+
+/* Workbook Header */
+.workbook-header {
+  background: var(--white);
+  border-bottom: 3px solid var(--fuchsia);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--fuchsia);
+  letter-spacing: -2px;
+}
+
+.workbook-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--charcoal);
+}
+
+.progress-section {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.progress-steps {
+  display: flex;
+  gap: 8px;
+}
+
+.progress-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  background: var(--white);
+  color: var(--charcoal);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: var(--white);
+  box-shadow: 0 0 0 8px rgba(30, 154, 180, 0.1);
+}
+
+.progress-dot.completed {
+  background: var(--fuchsia);
+  border-color: var(--fuchsia);
+  color: var(--white);
+}
+
+.role-badge {
+  background: linear-gradient(135deg, var(--fuchsia) 0%, var(--orange) 100%);
+  color: var(--white);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Main Content */
+.workbook-content {
+  flex: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 40px 20px;
+}
+
+/* Footer */
+.workbook-footer {
+  background: var(--white);
+  border-top: 1px solid #eee;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+}
+
+.nav-button {
+  background: var(--white);
+  border: 2px solid var(--fuchsia);
+  color: var(--fuchsia);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover:not(:disabled) {
+  background: var(--fuchsia);
+  color: var(--white);
+}
+
+.nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.prev-btn {
+  border-color: #ddd;
+  color: #999;
+}
+
+.prev-btn:hover:not(:disabled) {
+  background: var(--light-gray);
+  color: #666;
+}
+
+.next-btn {
+  border-color: var(--fuchsia);
+  color: var(--fuchsia);
+}
+
+.progress-indicator {
+  color: #999;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px 20px;
+  }
+
+  .progress-section {
+    width: 100%;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .progress-steps {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .workbook-content {
+    padding: 20px 15px;
+  }
+
+  .workbook-footer {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+}

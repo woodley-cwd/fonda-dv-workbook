@@ -1,0 +1,190 @@
+.workbook-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--cream);
+}
+
+.workbook-nav {
+  background: var(--white);
+  border-bottom: 3px solid var(--role-color);
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  sticky: top 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.nav-logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--fuchsia);
+}
+
+.nav-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--charcoal);
+}
+
+.nav-progress {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 0 40px;
+}
+
+.nav-item {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--light-gray);
+  border: 2px solid transparent;
+  color: #999;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-item.active {
+  background: var(--role-color);
+  color: var(--white);
+  border-color: var(--role-color);
+}
+
+.nav-item.completed {
+  background: rgba(30, 154, 180, 0.1);
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+.nav-user-role {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-content {
+  flex: 1;
+  padding: 60px 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.section-header {
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.section-header-accent {
+  height: 6px;
+  background: linear-gradient(90deg, var(--fuchsia), var(--orange), var(--strawberry), var(--cyan));
+  border-radius: 3px;
+  margin-bottom: 24px;
+  width: 120px;
+}
+
+.section-header h1 {
+  font-size: 42px;
+  margin-bottom: 16px;
+  color: var(--charcoal);
+  font-weight: 700;
+}
+
+.section-subtitle,
+.scenario-subtitle {
+  font-size: 18px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.section-callout {
+  background: linear-gradient(135deg, rgba(253, 43, 96, 0.08), rgba(30, 154, 180, 0.08));
+  border-left: 4px solid var(--fuchsia);
+  padding: 28px 32px;
+  border-radius: 12px;
+  margin: 40px 0;
+}
+
+.section-callout h4 {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--charcoal);
+}
+
+.section-callout p {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.7;
+}
+
+.section-navigation {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 2px solid var(--light-gray);
+}
+
+.nav-button {
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.nav-button.primary {
+  background: linear-gradient(135deg, var(--fuchsia), var(--strawberry));
+  color: var(--white);
+  flex: 1;
+}
+
+.nav-button.primary:hover {
+  box-shadow: 0 8px 24px rgba(253, 43, 96, 0.3);
+}
+
+.nav-button.secondary {
+  background: var(--light-gray);
+  color: var(--charcoal);
+  flex: 1;
+}
+
+.nav-button.secondary:hover {
+  background: #e8e8e8;
+}
+
+@media (max-width: 768px) {
+  .workbook-nav {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .nav-progress {
+    margin: 0;
+  }
+
+  .section-content {
+    padding: 40px 20px;
+  }
+
+  .section-header h1 {
+    font-size: 32px;
+  }
+}
