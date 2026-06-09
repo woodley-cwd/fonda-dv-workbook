@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "build",
-  "env": {},
-  "regions": ["sfo1"]
+  "buildCommand": "cd dv-workbook && npm run build",
+  "outputDirectory": "dv-workbook/build",
+  "devCommand": "cd dv-workbook && npm start",
+  "installCommand": "npm install && cd dv-workbook && npm install"
 }
